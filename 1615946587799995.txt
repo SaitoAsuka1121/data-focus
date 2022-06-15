@@ -1,0 +1,64 @@
+# 字段说明
+字段名           -- 含义                 示例
+day_id,          -- 承运日期             2012-10-06
+dpt_cty_cd,      -- 出发城市             DCF
+arrv_cty_cd,     -- 到达城市             DAD
+dpt_airpt_cd,    -- 出发机场             GEG
+arrv_airpt_cd,   -- 到达机场             DGD
+carr_cd,         -- 航空公司             AC
+flt_nbr,         -- 航班号               1396
+cls_cd,          -- 主舱位               Y
+sub_cls_cd,      -- 子舱位               L
+flt_rte_cd,      -- 航班航线             CCG-GEG-DGD
+flt_seg_dpt_hh,  -- 航段起飞小时         10
+flt_seg_dpt_mm,  -- 航段起飞分钟         25
+flt_seg_arrv_dt, -- 到达日期             2012-10-06
+flt_seg_arrv_hh, -- 航段到达小时         14
+flt_seg_arrv_mm, -- 航段到达分钟         45
+flt_seg_seq_nbr, -- 航段序号             23
+aircrft_typ,     -- 机型                 738
+flt_seg_dstnc,   -- 航段距离             3217.0
+leg_qty,         -- 航节数               2
+cls_cpc_qty,     -- 航节主舱位运力量     0
+pax_qty,         -- 旅客量               3
+fc_pax_qty,      -- 主舱位是F和C的旅客量 0
+grp_pax_qty,     -- 团队旅客量           0
+ffp_pax_qty,     -- 常旅客量             0
+net_amt,         -- 每旅客分摊收入       2474.92
+y_fr_amt         -- Y舱基准价            9378.64
+
+
+# 数据量、数据范围
+csv格式，第一行为表头，约460万条记录，日期范围（day_id）：[2012-05-01, 2012-10-30]，解压后约470MB
+
+数据经过脱敏、加盐，其中城市代码、机场代码可能出现重复，但重复代码不代表两个有相关性。
+例如dpt_cty_cd可能是 AAA，dpt_airpt_cd也是AAA，但机场AAA并不是城市AAA拥有的机场。
+
+
+# 业务解释和民航常用指标计算公式
+
+旅客量：单位为“人次”，例如 1个旅客乘机往返北京上海，计2人次
+
+座公里：sum( 可供座位（cls_cpc_qty） * 航段距离（flt_seg_dstnc）)
+
+客公里：sum( 旅客量（pax_qty） * 航段距离（flt_seg_dstnc）)
+
+客座率：客公里 / 座公里
+
+
+# 如何构造用于join操作的表
+如果想测试表join功能，一个示例：
+
+day_id,节假日
+2012-05-01,劳动节
+2012-10-01,国庆节
+...
+
+# 数据汇聚示例
+样例数据表为每个承运日期、每航班、每舱位（细化到子舱）细粒度的旅客量、团队旅客量、常旅客量、每旅客收入等信息，
+通过groupby，可向上汇总，例如统计每个承运日期、每航班总旅客量，平均客座率；按航线统计旅客量；按机场/城市统计出、入港旅客量（吞吐量）等
+
+
+
+
+
